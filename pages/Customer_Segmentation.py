@@ -4,7 +4,8 @@ import pandas as pd
 st.title("👥 Customer Segmentation (RFM Analysis)")
 
 df = pd.read_csv("sales_data.csv")
-df["order_date"] = pd.to_datetime(df["order_date"])
+df["order_date"] = pd.to_datetime(df["order_date"], errors="coerce")
+df = df.dropna(subset=["order_date"])
 
 snapshot_date = df["order_date"].max()
 
@@ -20,5 +21,6 @@ rfm["Segment"] = pd.qcut(rfm["Monetary"], 4,
                          labels=["Low", "Medium", "High", "VIP"])
 
 st.dataframe(rfm)
+
 
 st.bar_chart(rfm["Segment"].value_counts())
