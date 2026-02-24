@@ -14,13 +14,19 @@ rfm = df.groupby("customer_name").agg({
     "order_id": "nunique",
     "sales": "sum"
 })
+# Ensure numeric
+rfm["Monetary"] = pd.to_numeric(rfm["Monetary"], errors="coerce")
+rfm = rfm.dropna(subset=["Monetary"])
 
-rfm.columns = ["Recency", "Frequency", "Monetary"]
+# Safe qcut with duplicates handling
+rfm["Segment"] = pd.qcut(
+    rfm["Monetary"],
+    q=4,
+    labels=["Low", "Medium", "High", "VIP"],
+    duplicates="drop"
+)
 
-rfm["Segment"] = pd.qcut(rfm["Monetary"], 4,
-                         labels=["Low", "Medium", "High", "VIP"])
-
-st.dataframe(rfm)
 
 
-st.bar_chart(rfm["Segment"].value_counts())
+
+
